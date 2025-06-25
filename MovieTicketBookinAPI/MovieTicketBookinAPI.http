@@ -1,0 +1,6 @@
+@MovieTicketBookinAPI_HostAddress = http://localhost:5127
+
+GET {{MovieTicketBookinAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
