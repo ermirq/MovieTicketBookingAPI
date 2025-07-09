@@ -14,8 +14,8 @@
             set => _ = value;
         }
 
-        public int TheaterId { get; set; }
-        public Theater Theater { get; set; } = null!; 
+        public int CinemaId { get; set; }
+        public Cinema Cinema { get; set; } = null!; 
 
         public ICollection<ShowtimeSeat> ShowtimeSeats { get; set; } = new List<ShowtimeSeat>();
         public ICollection<BookingSeat> BookingSeats { get; set; } = new List<BookingSeat>();

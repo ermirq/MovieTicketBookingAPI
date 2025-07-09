@@ -1,8 +1,13 @@
-﻿namespace MovieTicketBookinAPI.Models.UserRoles
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace MovieTicketBookinAPI.Models.UserRoles
 {
     public class Login
     {
-        public string Username { get; set; } = string.Empty;
+        [Required]
+        public string Identifier { get; set; } = string.Empty;
+
+        [Required]
         public string Password { get; set; } = string.Empty;
     }
 }

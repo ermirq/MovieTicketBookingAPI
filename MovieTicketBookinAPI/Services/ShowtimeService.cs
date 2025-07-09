@@ -23,18 +23,18 @@ namespace MovieTicketBookinAPI.Services
             if (!movieExists)
                 throw new ArgumentException("Movie does not exist");
 
-            var theater = await _context.Theaters.FindAsync(showtimeDTO.TheaterId);
-            if (theater == null)
-                throw new ArgumentException("Theater does not exist");
+            var cinema = await _context.Cinemas.FindAsync(showtimeDTO.CinemaId);
+            if (cinema == null)
+                throw new ArgumentException("Cinema does not exist");
 
             var showtimeEntity = _mapper.Map<Showtime>(showtimeDTO);
 
             var seats = await _context.Seats
-                .Where(s => s.TheaterId == showtimeDTO.TheaterId)
+                .Where(s => s.CinemaId == showtimeDTO.CinemaId)
                 .ToListAsync();
 
             if (!seats.Any())
-                throw new InvalidOperationException("No seats configured for this theater.");
+                throw new InvalidOperationException("No seats configured for this cinema.");
 
             var showtimeSeats = seats.Select(seat => new ShowtimeSeat
             {
@@ -82,6 +82,14 @@ namespace MovieTicketBookinAPI.Services
             return _mapper.Map<IEnumerable<ShowtimeDTO>>(showtime);
         }
 
+        public async Task<List<Showtime>> GetShowtimesByMovieAsync(int movieId)
+        {
+            return await _context.Showtimes
+                .Where(s => s.MovieId == movieId)
+                .OrderBy(s => s.StartTime)
+                .ToListAsync();
+        }
+
         public async Task<ActionResult<ShowtimeDTO>> UpdateAsync(int id, ShowtimeDTO showtimeDTO)
         {
             var existingShowtime = await _context.Showtimes.FirstOrDefaultAsync(d => d.Id == id);
@@ -90,13 +98,13 @@ namespace MovieTicketBookinAPI.Services
 
             existingShowtime.StartTime = showtimeDTO.StartTime;
             existingShowtime.MovieId = showtimeDTO.MovieId;
-            existingShowtime.TheaterId = showtimeDTO.TheaterId;
+            existingShowtime.CinemaId = showtimeDTO.CinemaId;
 
             var movieExists = await _context.Movies.AnyAsync(m => m.Id == showtimeDTO.MovieId);
-            var theaterExists = await _context.Theaters.AnyAsync(t => t.Id == showtimeDTO.TheaterId);
+            var cinemaExists = await _context.Cinemas.AnyAsync(t => t.Id == showtimeDTO.CinemaId);
 
-            if (!movieExists || !theaterExists)
-                throw new ArgumentException("Movie or theater does not exist");
+            if (!movieExists || !cinemaExists)
+                throw new ArgumentException("Movie or cinema does not exist");
 
             _mapper.Map(showtimeDTO, existingShowtime);
 

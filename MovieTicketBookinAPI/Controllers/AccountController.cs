@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using MovieTicketBookinAPI.Models;
 using MovieTicketBookinAPI.Models.UserRoles;
 using System.Configuration;
 using System.IdentityModel.Tokens.Jwt;
@@ -27,7 +28,7 @@ namespace MovieTicketBookinAPI.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] Register model)
         {
-            var user = new IdentityUser { UserName = model.Username };
+            var user = new ApplicationUser { UserName = model.Username };
             var result = await _userManager.CreateAsync(user, model.Password);
 
             if (result.Succeeded)
@@ -41,20 +42,34 @@ namespace MovieTicketBookinAPI.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] Login model)
         {
-            var user = await _userManager.FindByNameAsync(model.Username);
-            if (user != null && await _userManager.CheckPasswordAsync(user, model.Password))
+            if (string.IsNullOrEmpty(model.Identifier) || string.IsNullOrEmpty(model.Password))
             {
-                var userRoles = await _userManager.GetRolesAsync(user);
+                return BadRequest(new { Message = "Email/Username and password are required." });
+            }
 
-                var authClaims = new List<Claim>
-                {
-                    new(ClaimTypes.Name, user.UserName!),
-                    new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-                };
+            var user = await _userManager.FindByNameAsync(model.Identifier);
 
-                authClaims.AddRange(userRoles.Select(role => new Claim(ClaimTypes.Role, role)));
+            if (user == null)
+            {
+                user = await _userManager.FindByEmailAsync(model.Identifier);
+            }
 
-                var token = new JwtSecurityToken(
+            if (user == null || !await _userManager.CheckPasswordAsync(user, model.Password))
+            {
+                return Unauthorized(new { Message = "Invalid email/username or password." });
+            }
+
+            var userRoles = await _userManager.GetRolesAsync(user);
+
+            var authClaims = new List<Claim>
+            {
+                new(ClaimTypes.Name, user.UserName!),
+                new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+            };
+
+            authClaims.AddRange(userRoles.Select(role => new Claim(ClaimTypes.Role, role)));
+
+            var token = new JwtSecurityToken(
                 issuer: _configuration["Jwt:Issuer"],
                 audience: _configuration["Jwt:Audience"],
                 expires: DateTime.Now.AddMinutes(double.Parse(_configuration["Jwt:ExpiryMinutes"]!)),
@@ -62,9 +77,7 @@ namespace MovieTicketBookinAPI.Controllers
                 signingCredentials: new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!)),
                 SecurityAlgorithms.HmacSha256));
 
-                return Ok (new JwtSecurityTokenHandler().WriteToken(token));
-            }
-            return Unauthorized(new { Message = "Invalid username or password." });
+            return Ok(new { token = new JwtSecurityTokenHandler().WriteToken(token), message = "Login successful" });
         }
 
         [HttpPost("add-role")] 

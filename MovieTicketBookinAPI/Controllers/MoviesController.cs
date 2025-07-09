@@ -33,6 +33,20 @@ namespace MovieTicketBookinAPI.Controllers
             return Ok(movie);  
         }
 
+        [HttpGet("search")]
+        public async Task<ActionResult<List<MovieDTO>>> SearchMovies([FromQuery] string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                return BadRequest("Search query cannot be empty.");
+
+            var movies = await _movieService.SearchMoviesByNameAsync(name);
+
+            if (movies == null)
+                throw new Exception("Movies does not exist");
+
+            return Ok(movies);
+        }
+
         [HttpPost]
         public async Task<ActionResult<MovieDTO>> CreateMovie([FromBody] MovieDTO movieDto)
         {
