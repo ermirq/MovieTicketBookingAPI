@@ -10,7 +10,7 @@ namespace MovieTicketBookinAPI.Services
     {
         Task<IdentityResult> AddRoleAsync(string role);
         Task<IdentityResult> AssignRoleAsync(UserRole model);
-        Task<string?> LoginAsync(Login model);
+        Task<AuthResponseDTO?> LoginAsync(Login model);
         Task<IdentityResult> RegisterAsync(Register model);
     }
 }

@@ -21,7 +21,7 @@ namespace MovieTicketBookinAPI.Services
         {
 
             var showtime = await _context.Showtimes
-                                         .Include(s => s.Theater)
+                                         .Include(s => s.Cinema)
                                          .ThenInclude(t => t.Seats)
                                          .FirstOrDefaultAsync(s => s.Id == showtimeId);
 
@@ -37,20 +37,20 @@ namespace MovieTicketBookinAPI.Services
                 throw new ArgumentException($"Seats for showtime {showtimeId} already exist. Please delete them before generating new seats.");
             }
 
-            var allPhysicalSeatsInTheater = showtime.Theater.Seats
+            var allPhysicalSeatsInCinema = showtime.Cinema.Seats
                                                         .OrderBy(s => s.Row)
                                                         .ThenBy(s => s.Number)
                                                         .ToList();
 
             char maxRowLetter = (char)('A' + rows - 1);
-            var selectedPhysicalSeats = allPhysicalSeatsInTheater
+            var selectedPhysicalSeats = allPhysicalSeatsInCinema
                 .Where(s => s.Row.Length == 1 && s.Row[0] >= 'A' && s.Row[0] <= maxRowLetter &&
                             s.Number >= 1 && s.Number <= seatPerRow)
                 .ToList();
 
             if (!selectedPhysicalSeats.Any())
             {
-                throw new InvalidOperationException($"No physical seats found in theater '{showtime.Theater.Name}' matching the specified dimensions ({rows} rows, {seatPerRow} seats per row). Please ensure theater seats are correctly configured.");
+                throw new InvalidOperationException($"No physical seats found in cinema '{showtime.Cinema.Name}' matching the specified dimensions ({rows} rows, {seatPerRow} seats per row). Please ensure cinema seats are correctly configured.");
             }
 
 
@@ -83,7 +83,7 @@ namespace MovieTicketBookinAPI.Services
             var showtimeSeats = await _context.ShowtimeSeats
                  .Where(ss => ss.ShowtimeId == showtimeId)
                  .Include(ss => ss.Seat)
-                 .ThenInclude(seat => seat.Theater)
+                 .ThenInclude(seat => seat.Cinema)
                  .Include(ss => ss.Showtime)
                  .ToListAsync();
 

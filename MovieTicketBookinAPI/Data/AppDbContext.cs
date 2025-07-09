@@ -1,7 +1,10 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Humanizer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.CodeAnalysis.Elfie.Serialization;
 using Microsoft.EntityFrameworkCore;
 using MovieTicketBookinAPI.Models;
+using static System.Net.WebRequestMethods;
 
 namespace MovieTicketBookinAPI.Data
 {
@@ -10,7 +13,7 @@ namespace MovieTicketBookinAPI.Data
         public AppDbContext(DbContextOptions options) : base(options) { }
 
         public DbSet<Movie> Movies => Set<Movie>();
-        public DbSet<Theater> Theaters => Set<Theater>();
+        public DbSet<Cinema> Cinemas => Set<Cinema>();
         public DbSet<Showtime> Showtimes => Set<Showtime>();
         public DbSet<Seat> Seats => Set<Seat>();
         public DbSet<Booking> Bookings => Set<Booking>();
@@ -30,27 +33,48 @@ namespace MovieTicketBookinAPI.Data
                  Title = "Inception",
                  Description = "A mind-bending thriller",
                  DurationInMinutes = 148,
-                 Genre = "Sci-Fi"
+                 Genre = "Sci-Fi",
+                 PosterUrl = "https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_.jpg"
              },
-
 
              new Movie()
              {
-                 Id =2,
+                 Id = 2,
                  Title = "The Matrix",
                  Description = "A hacker discovers the true nature of reality",
                  DurationInMinutes = 136,
-                 Genre = "Action"
-             });
+                 Genre = "Action",
+                 PosterUrl = "https://m.media-amazon.com/images/I/51oQqzZoZpL._UF1000,1000_QL80_.jpg"
+             },
 
-            modelBuilder.Entity<Theater>().HasData(
-                             new Theater()
+            new Movie()
+            {
+                Id = 3,
+                Title = "Pirates of the Caribbean: The Curse of the Black Pearl",
+                Description = "A 2003 fantasy adventure film about a blacksmith, Will Turner, who teams up with the eccentric pirate Captain Jack Sparrow to rescue the kidnapped Governor's daughter, Elizabeth Swann, from the cursed pirate Captain Barbossa and his undead crew.",
+                Genre = "Sci-Fi",
+                DurationInMinutes = 143,
+                PosterUrl = "https://m.media-amazon.com/images/I/916kucr5MCS.jpg"
+            },
+
+            new Movie()
+            {
+                Id = 4,
+                Title = "Pirates of the Caribbean: Dead Man's Chest",
+                Description = "Follows Captain Jack Sparrow as he tries to escape his debt to Davy Jones, the fearsome captain of the Flying Dutchman, whose heart is locked away in the titular Dead Man's Chest",
+                Genre = "Action, Comedy, Adventure",
+                DurationInMinutes = 151,
+                PosterUrl = "https://s3.us-east-2.amazonaws.com/media.trendsinternational.com/8732-SIL22X34IMAGE1.jpg"
+            });
+
+            modelBuilder.Entity<Cinema>().HasData(
+                             new Cinema()
              {
                  Id = 1,
                  Name = "Cineplex 1",
                  Location = "Downtown"
              },
-             new Theater()
+             new Cinema()
              {
                  Id = 2,
                  Name = "Cineplex 2",
@@ -63,14 +87,14 @@ namespace MovieTicketBookinAPI.Data
                     Id = 1,
                     StartTime = new DateTime(2023, 10, 1, 14, 0, 0),
                     MovieId = 1,
-                    TheaterId = 1
+                    CinemaId = 1
                 },
                 new Showtime()
                 {
                     Id = 2,
                     StartTime = new DateTime(2023, 10, 1, 16, 0, 0),
                     MovieId = 2,
-                    TheaterId = 2
+                    CinemaId = 2
                 });
 
             // Configure ShowtimeSeat (Many-to-Many between Showtime and Seat)
@@ -104,17 +128,17 @@ namespace MovieTicketBookinAPI.Data
                 .OnDelete(DeleteBehavior.NoAction); // <-- MUST BE HERE
 
 
-            // Configure other relationships (e.g., Showtime to Movie/Theater, Seat to Theater)
+            // Configure other relationships (e.g., Showtime to Movie/Cinema, Seat to Cinema)
             modelBuilder.Entity<Showtime>()
-                 .HasOne(s => s.Theater)
+                 .HasOne(s => s.Cinema)
                  .WithMany(t => t.Showtimes)
-                 .HasForeignKey(s => s.TheaterId)
+                 .HasForeignKey(s => s.CinemaId)
                  .OnDelete(DeleteBehavior.Restrict); // 👈 change this from Cascade
 
             modelBuilder.Entity<Seat>()
-                .HasOne(s => s.Theater)
+                .HasOne(s => s.Cinema)
                 .WithMany(t => t.Seats)
-                .HasForeignKey(s => s.TheaterId)
+                .HasForeignKey(s => s.CinemaId)
                 .OnDelete(DeleteBehavior.Restrict); // 👈 or leave one with Cascade if preferred
 
 

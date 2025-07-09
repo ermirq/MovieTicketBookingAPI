@@ -16,11 +16,25 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
+var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: MyAllowSpecificOrigins,
+                      builder =>
+                      {
+                          builder.WithOrigins("http://localhost:5173",
+                                              "http://localhost:8080") 
+                                 .AllowAnyHeader()    
+                                 .AllowAnyMethod();  
+                      });
+});
+
 builder.Services.AddControllers();
 
 builder.Services.AddScoped<IBookingService, BookingService>();
 builder.Services.AddScoped<IMovieService, MovieService>();
-builder.Services.AddScoped<ITheaterService, TheaterService>();
+builder.Services.AddScoped<ICinemaService, CinemaService>();
 builder.Services.AddScoped<IShowtimeService, ShowtimeService>();
 builder.Services.AddScoped<ISeatService, SeatService>();
 builder.Services.AddScoped<IApplicationUserService, ApplicationUserService>();
@@ -82,9 +96,12 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseCors(MyAllowSpecificOrigins); // Enable CORS with the defined policy
+
 app.UseRouting();
 //app.UseAuthentication(); // If using authentication
 app.UseAuthorization();
+
 app.MapControllers();
 
 app.Run();

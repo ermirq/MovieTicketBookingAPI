@@ -43,17 +43,17 @@ namespace MovieTicketBookinAPI.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] Login model)
         {
-            var token = await _userService.LoginAsync(model);
+            var result = await _userService.LoginAsync(model);
 
-            if (string.IsNullOrWhiteSpace(token))
+            if (result == null)
             {
                 return Unauthorized(new { message = "Invalid credentials." });
             }
 
-            return Ok(new { token });
+            return Ok(result);
         }
 
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
         [HttpPost("add-role")]
         public async Task<IActionResult> AddRole([FromBody] string role)
         {

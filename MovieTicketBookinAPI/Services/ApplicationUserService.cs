@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
+using MovieTicketBookinAPI.DTOs;
+using MovieTicketBookinAPI.Models;
 using MovieTicketBookinAPI.Models.UserRoles;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -43,43 +45,67 @@ namespace MovieTicketBookinAPI.Services
             return result;
         }
 
-        public async Task<string?> LoginAsync(Login model)
+        public async Task<AuthResponseDTO?> LoginAsync(Login model)
         {
-            var user = await _userManager.FindByNameAsync(model.Username);
+            var user = await _userManager.FindByNameAsync(model.Identifier);
+
+            if (user == null)
+            {
+                user = await _userManager.FindByEmailAsync(model.Identifier);
+            }
+
             if (user != null && await _userManager.CheckPasswordAsync(user, model.Password))
             {
                 var userRoles = await _userManager.GetRolesAsync(user);
 
                 var authClaims = new List<Claim>
-                {
-                    new(ClaimTypes.Name, user.UserName!),
-                    new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-                };
+            {
+                new(ClaimTypes.Name, user.UserName!),
+                new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+            };
 
                 authClaims.AddRange(userRoles.Select(role => new Claim(ClaimTypes.Role, role)));
 
                 var token = new JwtSecurityToken(
-                issuer: _configuration["Jwt:Issuer"],
-                audience: _configuration["Jwt:Audience"],
-                expires: DateTime.Now.AddMinutes(double.Parse(_configuration["Jwt:ExpiryMinutes"]!)),
-                claims: authClaims,
-                signingCredentials: new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!)),
-                SecurityAlgorithms.HmacSha256));
+                    issuer: _configuration["Jwt:Issuer"],
+                    audience: _configuration["Jwt:Audience"],
+                    expires: DateTime.Now.AddMinutes(double.Parse(_configuration["Jwt:ExpiryMinutes"]!)),
+                    claims: authClaims,
+                    signingCredentials: new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!)),
+                    SecurityAlgorithms.HmacSha256));
 
-                return new JwtSecurityTokenHandler().WriteToken(token);
+                var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
+
+                var extractedRoles = new JwtSecurityTokenHandler()
+                    .ReadJwtToken(tokenString)
+                    .Claims
+                    .Where(c => c.Type == ClaimTypes.Role)
+                    .Select(c => c.Value)
+                    .ToList();
+
+                return new AuthResponseDTO
+                {
+                    Token = tokenString,
+                    Roles = extractedRoles
+                };
             }
 
             return null;
         }
 
+
+
         public async Task<IdentityResult> RegisterAsync(Register model)
         {
-            var user = new IdentityUser
+            var user = new ApplicationUser
             {
                 UserName = model.Username,
                 Email = model.Email,
-                PasswordHash = model.Password,
                 PhoneNumber = model.PhoneNumber,
+                FirstName = model.FirstName,
+                LastName = model.LastName,
+                DateCreated = DateTime.UtcNow,
+                Password = model.Password
             };
 
             var result = await _userManager.CreateAsync(user, model.Password);

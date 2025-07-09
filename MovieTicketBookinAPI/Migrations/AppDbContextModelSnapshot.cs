@@ -282,6 +282,41 @@ namespace MovieTicketBookinAPI.Migrations
                     b.ToTable("BookingSeats");
                 });
 
+            modelBuilder.Entity("MovieTicketBookinAPI.Models.Cinema", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Location")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Cinemas");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Location = "Downtown",
+                            Name = "Cineplex 1"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Location = "Uptown",
+                            Name = "Cineplex 2"
+                        });
+                });
+
             modelBuilder.Entity("MovieTicketBookinAPI.Models.Movie", b =>
                 {
                     b.Property<int>("Id")
@@ -301,6 +336,10 @@ namespace MovieTicketBookinAPI.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("PosterUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -316,6 +355,7 @@ namespace MovieTicketBookinAPI.Migrations
                             Description = "A mind-bending thriller",
                             DurationInMinutes = 148,
                             Genre = "Sci-Fi",
+                            PosterUrl = "https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_.jpg",
                             Title = "Inception"
                         },
                         new
@@ -324,7 +364,26 @@ namespace MovieTicketBookinAPI.Migrations
                             Description = "A hacker discovers the true nature of reality",
                             DurationInMinutes = 136,
                             Genre = "Action",
+                            PosterUrl = "https://m.media-amazon.com/images/I/51oQqzZoZpL._UF1000,1000_QL80_.jpg",
                             Title = "The Matrix"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Description = "A 2003 fantasy adventure film about a blacksmith, Will Turner, who teams up with the eccentric pirate Captain Jack Sparrow to rescue the kidnapped Governor's daughter, Elizabeth Swann, from the cursed pirate Captain Barbossa and his undead crew.",
+                            DurationInMinutes = 143,
+                            Genre = "Sci-Fi",
+                            PosterUrl = "https://m.media-amazon.com/images/I/916kucr5MCS.jpg",
+                            Title = "Pirates of the Caribbean: The Curse of the Black Pearl"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Description = "Follows Captain Jack Sparrow as he tries to escape his debt to Davy Jones, the fearsome captain of the Flying Dutchman, whose heart is locked away in the titular Dead Man's Chest",
+                            DurationInMinutes = 151,
+                            Genre = "Action, Comedy, Adventure",
+                            PosterUrl = "https://s3.us-east-2.amazonaws.com/media.trendsinternational.com/8732-SIL22X34IMAGE1.jpg",
+                            Title = "Pirates of the Caribbean: Dead Man's Chest"
                         });
                 });
 
@@ -336,6 +395,9 @@ namespace MovieTicketBookinAPI.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("CinemaId")
+                        .HasColumnType("int");
+
                     b.Property<int>("Number")
                         .HasColumnType("int");
 
@@ -346,12 +408,9 @@ namespace MovieTicketBookinAPI.Migrations
                     b.Property<string>("SeatNumber")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("TheaterId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("TheaterId");
+                    b.HasIndex("CinemaId");
 
                     b.ToTable("Seats");
                 });
@@ -364,20 +423,20 @@ namespace MovieTicketBookinAPI.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("CinemaId")
+                        .HasColumnType("int");
+
                     b.Property<int>("MovieId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("StartTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("TheaterId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("MovieId");
+                    b.HasIndex("CinemaId");
 
-                    b.HasIndex("TheaterId");
+                    b.HasIndex("MovieId");
 
                     b.ToTable("Showtimes");
 
@@ -385,16 +444,16 @@ namespace MovieTicketBookinAPI.Migrations
                         new
                         {
                             Id = 1,
+                            CinemaId = 1,
                             MovieId = 1,
-                            StartTime = new DateTime(2023, 10, 1, 14, 0, 0, 0, DateTimeKind.Unspecified),
-                            TheaterId = 1
+                            StartTime = new DateTime(2023, 10, 1, 14, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 2,
+                            CinemaId = 2,
                             MovieId = 2,
-                            StartTime = new DateTime(2023, 10, 1, 16, 0, 0, 0, DateTimeKind.Unspecified),
-                            TheaterId = 2
+                            StartTime = new DateTime(2023, 10, 1, 16, 0, 0, 0, DateTimeKind.Unspecified)
                         });
                 });
 
@@ -424,41 +483,6 @@ namespace MovieTicketBookinAPI.Migrations
                     b.ToTable("ShowtimeSeats");
                 });
 
-            modelBuilder.Entity("MovieTicketBookinAPI.Models.Theater", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Location")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Theaters");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Location = "Downtown",
-                            Name = "Cineplex 1"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Location = "Uptown",
-                            Name = "Cineplex 2"
-                        });
-                });
-
             modelBuilder.Entity("MovieTicketBookinAPI.Models.ApplicationUser", b =>
                 {
                     b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser");
@@ -471,6 +495,10 @@ namespace MovieTicketBookinAPI.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Password")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -573,32 +601,32 @@ namespace MovieTicketBookinAPI.Migrations
 
             modelBuilder.Entity("MovieTicketBookinAPI.Models.Seat", b =>
                 {
-                    b.HasOne("MovieTicketBookinAPI.Models.Theater", "Theater")
+                    b.HasOne("MovieTicketBookinAPI.Models.Cinema", "Cinema")
                         .WithMany("Seats")
-                        .HasForeignKey("TheaterId")
+                        .HasForeignKey("CinemaId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("Theater");
+                    b.Navigation("Cinema");
                 });
 
             modelBuilder.Entity("MovieTicketBookinAPI.Models.Showtime", b =>
                 {
+                    b.HasOne("MovieTicketBookinAPI.Models.Cinema", "Cinema")
+                        .WithMany("Showtimes")
+                        .HasForeignKey("CinemaId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("MovieTicketBookinAPI.Models.Movie", "Movie")
                         .WithMany("Showtimes")
                         .HasForeignKey("MovieId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MovieTicketBookinAPI.Models.Theater", "Theater")
-                        .WithMany("Showtimes")
-                        .HasForeignKey("TheaterId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                    b.Navigation("Cinema");
 
                     b.Navigation("Movie");
-
-                    b.Navigation("Theater");
                 });
 
             modelBuilder.Entity("MovieTicketBookinAPI.Models.ShowtimeSeat", b =>
@@ -631,6 +659,13 @@ namespace MovieTicketBookinAPI.Migrations
                     b.Navigation("ShowtimeSeats");
                 });
 
+            modelBuilder.Entity("MovieTicketBookinAPI.Models.Cinema", b =>
+                {
+                    b.Navigation("Seats");
+
+                    b.Navigation("Showtimes");
+                });
+
             modelBuilder.Entity("MovieTicketBookinAPI.Models.Movie", b =>
                 {
                     b.Navigation("Showtimes");
@@ -651,13 +686,6 @@ namespace MovieTicketBookinAPI.Migrations
             modelBuilder.Entity("MovieTicketBookinAPI.Models.ShowtimeSeat", b =>
                 {
                     b.Navigation("BookingSeats");
-                });
-
-            modelBuilder.Entity("MovieTicketBookinAPI.Models.Theater", b =>
-                {
-                    b.Navigation("Seats");
-
-                    b.Navigation("Showtimes");
                 });
 
             modelBuilder.Entity("MovieTicketBookinAPI.Models.ApplicationUser", b =>
