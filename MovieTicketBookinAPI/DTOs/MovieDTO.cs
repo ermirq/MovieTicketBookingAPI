@@ -7,5 +7,6 @@
         public string Description { get; set; } = string.Empty;
         public int DurationInMinutes { get; set; }
         public string Genre { get; set; } = string.Empty;
+        public string PosterUrl { get; set; } = string.Empty;
     }
 }

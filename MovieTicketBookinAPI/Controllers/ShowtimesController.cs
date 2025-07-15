@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using MovieTicketBookinAPI.DTOs;
 using MovieTicketBookinAPI.Services;
 
@@ -28,6 +29,20 @@ namespace MovieTicketBookinAPI.Controllers
         {
             var showtime = await _showtimeService.FindAsync(id);
             return Ok(showtime);
+        }
+
+        [HttpGet("byMovie/{movieId}")]
+        public async Task<IActionResult> GetShowtimesByMovie(int movieId)
+        {
+            if (movieId <= 0)
+                return BadRequest("Invalid movie ID.");
+
+            var showtimes = await _showtimeService.GetShowtimesByMovieAsync(movieId);
+
+            if (showtimes == null || !showtimes.Any())
+                return NotFound("No showtimes found for the specified movie.");
+
+            return Ok(showtimes);
         }
 
         [HttpPost]
