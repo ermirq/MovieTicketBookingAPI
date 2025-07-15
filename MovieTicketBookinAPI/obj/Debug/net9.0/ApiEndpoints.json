@@ -734,6 +734,22 @@
   },
   {
     "ContainingType": "MovieTicketBookinAPI.Controllers.ShowtimesController",
+    "Method": "GetShowtimeDetails",
+    "RelativePath": "api/Showtimes/{id}/details",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "MovieTicketBookinAPI.Controllers.ShowtimesController",
     "Method": "GetShowtimesByMovie",
     "RelativePath": "api/Showtimes/byMovie/{movieId}",
     "HttpMethod": "GET",

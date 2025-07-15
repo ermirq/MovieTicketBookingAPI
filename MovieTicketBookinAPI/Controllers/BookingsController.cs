@@ -21,19 +21,19 @@ namespace MovieTicketBookinAPI.Controllers
         [HttpPost("book")]
         public async Task<IActionResult> BookSeats([FromBody] BookingRequestDTO bookingRequest)
         {
-            var result = await _bookingService.BookSeatsAsync(bookingRequest);
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized(new { message = "User not authenticated or ID not found." });
+            }
+            var result = await _bookingService.BookSeatsAsync(bookingRequest, userId);
 
             if (!result.Success)
             {
                 return BadRequest(new { message = result.Message });
             }
 
-            return Ok(new
-            {
-                message = result.Message,
-                bookingId = result.Booking.Id,
-                bookingTime = result.Booking.BookingTime
-            });
+            return Ok(result);
         }
 
         [HttpGet]

@@ -5,7 +5,7 @@ namespace MovieTicketBookinAPI.Services
 {
     public interface IBookingService
     {
-        Task<(bool Success, string Message, Booking? Booking)> BookSeatsAsync(BookingRequestDTO bookingRequest);
+        Task<BookingResponseDTO> BookSeatsAsync(BookingRequestDTO bookingRequest, string userId);
         Task<bool> DeleteBookingAsync(int id);
         Task<IEnumerable<BookingRequestDTO>> GetAllBookingsAsync();
         Task<BookingRequestDTO> GetBookingByIdAsync(int id);

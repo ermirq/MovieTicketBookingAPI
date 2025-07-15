@@ -24,7 +24,6 @@ namespace MovieTicketBookinAPI.Mappings
             //.ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.Price));
 
             CreateMap<Booking, BookingRequestDTO>()
-                .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.UserId))
                 .ForMember(dest => dest.ShowtimeId, opt => opt.MapFrom(src => src.ShowtimeId))
                 .ForMember(dest => dest.SeatNumbers, opt =>
                     opt.MapFrom(src => src.BookingSeats.Select(bs => bs.SeatNumber)));          
@@ -32,6 +31,7 @@ namespace MovieTicketBookinAPI.Mappings
             CreateMap<BookingRequestDTO, Booking>();
             CreateMap<CreateMovieDTO, Movie>();
             CreateMap<Movie, CreateMovieDTO>();
+            CreateMap<BookingResponseDTO, Booking>().ReverseMap();
         }
     }
 }

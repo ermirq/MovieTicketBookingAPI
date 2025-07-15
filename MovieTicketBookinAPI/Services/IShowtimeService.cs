@@ -14,5 +14,6 @@ namespace MovieTicketBookinAPI.Services
         Task<IEnumerable<ShowtimeDTO>> GetAllShowtimesAsync();
         Task<List<Showtime>> GetShowtimesByMovieAsync(int movieId);
         Task<ActionResult<ShowtimeDTO>> UpdateAsync(int id, ShowtimeDTO showtimeDTO);
+        Task<ShowtimeDetailsDTO?> GetShowtimeDetailsAsync(int showtimeId);
     }
 }
