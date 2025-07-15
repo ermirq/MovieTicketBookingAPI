@@ -18,8 +18,11 @@ namespace MovieTicketBookinAPI.Services
 
         public async Task<IEnumerable<CinemaDTO>> GetAllCinemasAsync()
         {
-            var cinema = await _context.Cinemas.ToListAsync();
-            return _mapper.Map<IEnumerable<CinemaDTO>>(cinema);
+            var cinemas = await _context.Cinemas
+               .Include(c => c.Showtimes)
+                   .ThenInclude(s => s.Movie)
+               .ToListAsync();
+            return _mapper.Map<IEnumerable<CinemaDTO>>(cinemas);
         }
 
         public async Task<CinemaDTO> FindAsync(int id)
@@ -114,6 +117,16 @@ namespace MovieTicketBookinAPI.Services
             await _context.SaveChangesAsync();
 
             return newSeats.Count;
+        }
+
+        public async Task<List<CinemaDTO>> GetCinemasWithShowtimesAsync()
+        {
+            var cinemas = await _context.Cinemas
+                .Include(c => c.Showtimes)
+                    .ThenInclude(s => s.Movie)
+                .ToListAsync();
+
+            return _mapper.Map<List<CinemaDTO>>(cinemas);
         }
     }
 }

@@ -6,6 +6,7 @@
         public DateTime StartTime { get; set; }
 
         public int MovieId { get; set; }
+        public MovieDTO? Movie { get; set; }
         public int CinemaId { get; set; }
     }
 }

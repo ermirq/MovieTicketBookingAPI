@@ -11,7 +11,9 @@ namespace MovieTicketBookinAPI.Mappings
         {
             CreateMap<ApplicationUser, ApplicationUserDTO>().ReverseMap().ForMember(dest => dest.Id, opt => opt.Ignore());  
             CreateMap<Movie, MovieDTO>().ReverseMap().ForMember(dest => dest.Id, opt => opt.Ignore());
-            CreateMap<Cinema, CinemaDTO>().ReverseMap().ForMember(dest => dest.Id, opt => opt.Ignore());
+            CreateMap<Cinema, CinemaDTO>()
+                .ForMember(dest => dest.Showtimes, opt => opt.MapFrom(src => src.Showtimes)) 
+                .ReverseMap().ForMember(dest => dest.Id, opt => opt.Ignore());
             CreateMap<Showtime, ShowtimeDTO>().ReverseMap().ForMember(dest => dest.Id, opt => opt.Ignore());
             CreateMap<Seat, SeatDTO>().ReverseMap().ForMember(dest => dest.Id, opt => opt.Ignore());
 
@@ -28,6 +30,8 @@ namespace MovieTicketBookinAPI.Mappings
                     opt.MapFrom(src => src.BookingSeats.Select(bs => bs.SeatNumber)));          
 
             CreateMap<BookingRequestDTO, Booking>();
+            CreateMap<CreateMovieDTO, Movie>();
+            CreateMap<Movie, CreateMovieDTO>();
         }
     }
 }

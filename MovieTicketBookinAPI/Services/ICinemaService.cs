@@ -12,5 +12,6 @@ namespace MovieTicketBookinAPI.Services
         Task<CinemaDTO> AddAsync(CinemaDTO cinemaDto);
         Task<bool> DeleteAsync(int id);
         Task<int> AddSeatsAsync(int cinemaId, int numRows, int seatsPerRow);
+        Task<List<CinemaDTO>> GetCinemasWithShowtimesAsync();
     }
 }

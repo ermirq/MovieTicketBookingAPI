@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using MovieTicketBookinAPI.DTOs;
+using MovieTicketBookinAPI.Models;
 using MovieTicketBookinAPI.Services;
 
 namespace MovieTicketBookinAPI.Controllers
@@ -31,6 +33,13 @@ namespace MovieTicketBookinAPI.Controllers
                 return NotFound("Cinema not found.");
 
             return Ok(cinema);
+        }
+
+        [HttpGet("with-showtimes")]
+        public async Task<ActionResult<List<CinemaDTO>>> GetCinemasWithShowtimes()
+        {
+            var result = await _cinemaService.GetCinemasWithShowtimesAsync();
+            return Ok(result);
         }
 
         [HttpPost]
