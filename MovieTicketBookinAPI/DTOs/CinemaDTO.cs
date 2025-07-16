@@ -7,4 +7,12 @@
         public string? Location { get; set; } = string.Empty;
         public List<ShowtimeDTO> Showtimes { get; set; } = new List<ShowtimeDTO>();
     }
+
+    public class CreateCinemaDTO
+    {
+        public string? Name { get; set; }
+        public string? Location { get; set; }
+        public int? NumRows { get; set; }  
+        public int? SeatsPerRow { get; set; }
+    }
 }

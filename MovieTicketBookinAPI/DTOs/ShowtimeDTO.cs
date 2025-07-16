@@ -14,8 +14,8 @@
     {
         public int Id { get; set; }
         public DateTime StartTime { get; set; }
-        public MovieDTO Movie { get; set; }
-        public CinemaDTO Cinema { get; set; }
-        public List<SeatDTO> Seats { get; set; }
+        public MovieDTO? Movie { get; set; }
+        public CinemaDTO? Cinema { get; set; }
+        public List<SeatDTO> Seats { get; set; } = new();
     }
 }

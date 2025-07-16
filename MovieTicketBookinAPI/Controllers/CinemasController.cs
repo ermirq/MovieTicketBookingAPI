@@ -43,14 +43,14 @@ namespace MovieTicketBookinAPI.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<CinemaDTO>> CreateCinema([FromBody] CinemaDTO cinemaDto)
+        public async Task<ActionResult<CreateCinemaDTO>> CreateCinema([FromBody] CreateCinemaDTO cinemaDto)
         {
             if (cinemaDto == null)
                 return BadRequest("Invalid cinema data.");
             var createdCinema = await _cinemaService.AddAsync(cinemaDto);
             if (createdCinema == null)
                 return BadRequest("Failed to create cinema. Please check your input.");
-            return CreatedAtAction(nameof(GetCinemaById), new { id = createdCinema.Id }, createdCinema);
+            return Ok("Cinema Created Successfully");
         }
 
         [HttpPost("{cinemaId}/add-seats")]

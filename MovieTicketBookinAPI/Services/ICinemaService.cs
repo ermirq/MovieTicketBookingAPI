@@ -9,7 +9,7 @@ namespace MovieTicketBookinAPI.Services
         Task<IEnumerable<CinemaDTO>> GetAllCinemasAsync();
         Task<CinemaDTO> FindAsync(int id);
         Task<CinemaDTO> UpdateAsync(int id, CinemaDTO cinemaDto);
-        Task<CinemaDTO> AddAsync(CinemaDTO cinemaDto);
+        Task<CreateCinemaDTO> AddAsync(CreateCinemaDTO cinemaDto);
         Task<bool> DeleteAsync(int id);
         Task<int> AddSeatsAsync(int cinemaId, int numRows, int seatsPerRow);
         Task<List<CinemaDTO>> GetCinemasWithShowtimesAsync();

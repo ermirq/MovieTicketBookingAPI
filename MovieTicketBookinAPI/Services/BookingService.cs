@@ -183,5 +183,32 @@ namespace MovieTicketBookinAPI.Services
             await _context.SaveChangesAsync();
             return true;
         }
+
+        public async Task<IEnumerable<BookingHistoryDTO>> GetUserBookingsAsync(string userId)
+        {
+            var bookings = await _context.Bookings
+                .Where(b => b.UserId == userId)
+                .Include(b => b.ShowTime) 
+                    .ThenInclude(st => st.Movie) 
+                .Include(b => b.ShowTime) 
+                    .ThenInclude(st => st.Cinema) 
+                .Include(b => b.BookingSeats)
+                .OrderByDescending(b => b.BookingTime)
+                .ToListAsync();
+
+            
+            var bookingHistory = bookings.Select(b => new BookingHistoryDTO
+            {
+                Id = b.Id,
+                MovieTitle = b.ShowTime?.Movie?.Title ?? "N/A", 
+                Showtime = b.ShowTime?.StartTime ?? DateTime.MinValue, 
+                CinemaName = b.ShowTime?.Cinema?.Name ?? "N/A", 
+                BookingTime = b.BookingTime,
+                Status = b.Status,
+                Seats = b.BookingSeats.Select(bs => bs.SeatNumber ?? "N/A").ToList()
+            }).ToList();
+
+            return bookingHistory;
+        }
     }
 }

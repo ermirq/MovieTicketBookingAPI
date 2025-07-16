@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using MovieTicketBookinAPI.Data;
 using MovieTicketBookinAPI.Mappings;
@@ -39,13 +40,19 @@ builder.Services.AddScoped<IShowtimeService, ShowtimeService>();
 builder.Services.AddScoped<ISeatService, SeatService>();
 builder.Services.AddScoped<IApplicationUserService, ApplicationUserService>();
 
+
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+{
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+
+
+    options.LogTo(Console.WriteLine, LogLevel.Information).EnableSensitiveDataLogging();
+});
 
 builder.Services.AddIdentity<IdentityUser, IdentityRole>() 
     .AddEntityFrameworkStores<AppDbContext>() 

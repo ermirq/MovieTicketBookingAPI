@@ -35,15 +35,21 @@ namespace MovieTicketBookinAPI.Services
             return _mapper.Map<CinemaDTO>(cinema);
         }
 
-        public async Task<CinemaDTO> AddAsync(CinemaDTO cinemaDto)
+        public async Task<CreateCinemaDTO> AddAsync(CreateCinemaDTO cinemaDto)
         {
-            var cinemaEntity = _mapper.Map<Cinema>(cinemaDto);
+            var cinema = _mapper.Map<Cinema>(cinemaDto);
 
-            await _context.Cinemas.AddAsync(cinemaEntity);
+            _context.Cinemas.Add(cinema);
             await _context.SaveChangesAsync();
 
-            return _mapper.Map<CinemaDTO>(cinemaEntity);
+            if (cinemaDto.NumRows.HasValue && cinemaDto.SeatsPerRow.HasValue)
+            {
+                await AddSeatsAsync(cinema.Id, cinemaDto.NumRows.Value, cinemaDto.SeatsPerRow.Value);
+            }
+
+            return _mapper.Map<CreateCinemaDTO>(cinema);
         }
+
 
         public async Task<CinemaDTO> UpdateAsync(int id, CinemaDTO cinemaDto)
         {
