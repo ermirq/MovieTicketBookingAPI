@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MovieTicketBookinAPI.Data;
 
@@ -11,9 +12,11 @@ using MovieTicketBookinAPI.Data;
 namespace MovieTicketBookinAPI.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250716081522_ConfigureCascadeDeleteForCinemaSeats")]
+    partial class ConfigureCascadeDeleteForCinemaSeats
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -265,7 +268,7 @@ namespace MovieTicketBookinAPI.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Bookings", (string)null);
+                    b.ToTable("Bookings");
                 });
 
             modelBuilder.Entity("MovieTicketBookinAPI.Models.BookingSeat", b =>
@@ -288,7 +291,7 @@ namespace MovieTicketBookinAPI.Migrations
 
                     b.HasIndex("ShowtimeId", "SeatId");
 
-                    b.ToTable("BookingSeats", (string)null);
+                    b.ToTable("BookingSeats");
                 });
 
             modelBuilder.Entity("MovieTicketBookinAPI.Models.Cinema", b =>
@@ -309,7 +312,7 @@ namespace MovieTicketBookinAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Cinemas", (string)null);
+                    b.ToTable("Cinemas");
 
                     b.HasData(
                         new
@@ -355,7 +358,7 @@ namespace MovieTicketBookinAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Movies", (string)null);
+                    b.ToTable("Movies");
 
                     b.HasData(
                         new
@@ -421,7 +424,7 @@ namespace MovieTicketBookinAPI.Migrations
 
                     b.HasIndex("CinemaId");
 
-                    b.ToTable("Seats", (string)null);
+                    b.ToTable("Seats");
                 });
 
             modelBuilder.Entity("MovieTicketBookinAPI.Models.Showtime", b =>
@@ -447,7 +450,7 @@ namespace MovieTicketBookinAPI.Migrations
 
                     b.HasIndex("MovieId");
 
-                    b.ToTable("Showtimes", (string)null);
+                    b.ToTable("Showtimes");
                 });
 
             modelBuilder.Entity("MovieTicketBookinAPI.Models.ShowtimeSeat", b =>
@@ -473,7 +476,7 @@ namespace MovieTicketBookinAPI.Migrations
 
                     b.HasIndex("SeatId");
 
-                    b.ToTable("ShowtimeSeats", (string)null);
+                    b.ToTable("ShowtimeSeats");
                 });
 
             modelBuilder.Entity("MovieTicketBookinAPI.Models.ApplicationUser", b =>

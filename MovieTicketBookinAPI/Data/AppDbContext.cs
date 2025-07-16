@@ -84,7 +84,7 @@ namespace MovieTicketBookinAPI.Data
                 .HasOne(s => s.Cinema)
                 .WithMany(c => c.Seats)
                 .HasForeignKey(s => s.CinemaId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
 
             // 🎟 ShowtimeSeat - Composite PK and FK
             modelBuilder.Entity<ShowtimeSeat>()

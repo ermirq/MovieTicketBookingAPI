@@ -1,4 +1,6 @@
-﻿namespace MovieTicketBookinAPI.DTOs
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace MovieTicketBookinAPI.DTOs
 {
     public class CinemaDTO
     {
@@ -10,9 +12,17 @@
 
     public class CreateCinemaDTO
     {
-        public string? Name { get; set; }
-        public string? Location { get; set; }
-        public int? NumRows { get; set; }  
+        [Required(ErrorMessage = "Name is required.")]
+        [StringLength(100, ErrorMessage = "Name cannot exceed 100 characters.")]
+        public string Name { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Location is required.")]
+        [StringLength(200, ErrorMessage = "Location cannot exceed 200 characters.")]
+        public string Location { get; set; } = string.Empty;
+
+        [Required]
+        public int? NumRows { get; set; }
+        [Required]
         public int? SeatsPerRow { get; set; }
     }
 }

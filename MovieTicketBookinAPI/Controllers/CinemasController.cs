@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MovieTicketBookinAPI.DTOs;
@@ -42,6 +43,7 @@ namespace MovieTicketBookinAPI.Controllers
             return Ok(result);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<ActionResult<CreateCinemaDTO>> CreateCinema([FromBody] CreateCinemaDTO cinemaDto)
         {
@@ -50,7 +52,7 @@ namespace MovieTicketBookinAPI.Controllers
             var createdCinema = await _cinemaService.AddAsync(cinemaDto);
             if (createdCinema == null)
                 return BadRequest("Failed to create cinema. Please check your input.");
-            return Ok("Cinema Created Successfully");
+            return Ok(createdCinema);
         }
 
         [HttpPost("{cinemaId}/add-seats")]

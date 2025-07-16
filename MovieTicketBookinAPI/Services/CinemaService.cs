@@ -72,10 +72,17 @@ namespace MovieTicketBookinAPI.Services
 
         public async Task<bool> DeleteAsync(int id)
         {
-            var deleteCinema = await _context.Cinemas.FirstOrDefaultAsync(t => t.Id == id);
+            var deleteCinema = await _context.Cinemas
+                .Include(c => c.Showtimes)
+                .FirstOrDefaultAsync(t => t.Id == id);
             if (deleteCinema == null)
             {
                 throw new Exception("Cinema not found.");
+            }
+
+            if (deleteCinema.Showtimes != null && deleteCinema.Showtimes.Any())
+            {
+                _context.Showtimes.RemoveRange(deleteCinema.Showtimes);
             }
 
             _context.Cinemas.Remove(deleteCinema);
