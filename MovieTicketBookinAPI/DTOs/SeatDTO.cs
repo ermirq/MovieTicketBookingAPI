@@ -11,5 +11,6 @@ namespace MovieTicketBookinAPI.DTOs
 
         public int CinemaId { get; set; }
 
+        public bool IsBooked { get; set; }
     }
 }

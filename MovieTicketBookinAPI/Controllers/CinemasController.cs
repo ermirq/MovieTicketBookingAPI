@@ -1,6 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using MovieTicketBookinAPI.DTOs;
+using MovieTicketBookinAPI.Models;
 using MovieTicketBookinAPI.Services;
 
 namespace MovieTicketBookinAPI.Controllers
@@ -33,15 +36,23 @@ namespace MovieTicketBookinAPI.Controllers
             return Ok(cinema);
         }
 
+        [HttpGet("with-showtimes")]
+        public async Task<ActionResult<List<CinemaDTO>>> GetCinemasWithShowtimes()
+        {
+            var result = await _cinemaService.GetCinemasWithShowtimesAsync();
+            return Ok(result);
+        }
+
+        [Authorize(Roles = "Admin")]
         [HttpPost]
-        public async Task<ActionResult<CinemaDTO>> CreateCinema([FromBody] CinemaDTO cinemaDto)
+        public async Task<ActionResult<CreateCinemaDTO>> CreateCinema([FromBody] CreateCinemaDTO cinemaDto)
         {
             if (cinemaDto == null)
                 return BadRequest("Invalid cinema data.");
             var createdCinema = await _cinemaService.AddAsync(cinemaDto);
             if (createdCinema == null)
                 return BadRequest("Failed to create cinema. Please check your input.");
-            return CreatedAtAction(nameof(GetCinemaById), new { id = createdCinema.Id }, createdCinema);
+            return Ok(createdCinema);
         }
 
         [HttpPost("{cinemaId}/add-seats")]

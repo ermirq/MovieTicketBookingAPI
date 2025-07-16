@@ -61,6 +61,7 @@ namespace MovieTicketBookinAPI.Services
                 var authClaims = new List<Claim>
             {
                 new(ClaimTypes.Name, user.UserName!),
+                new(ClaimTypes.NameIdentifier, user.Id),
                 new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
 

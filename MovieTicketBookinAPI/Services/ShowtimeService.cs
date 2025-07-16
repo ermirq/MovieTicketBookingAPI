@@ -41,7 +41,7 @@ namespace MovieTicketBookinAPI.Services
                 SeatId = seat.Id,
                 Seat = seat,
                 IsBooked = false,
-                Price = 10.0m // or whatever default price you want
+                Price = 10.0m 
             }).ToList();
 
             showtimeEntity.ShowtimeSeats = showtimeSeats;
@@ -50,6 +50,45 @@ namespace MovieTicketBookinAPI.Services
             await _context.SaveChangesAsync();
 
             return _mapper.Map<ShowtimeDTO>(showtimeEntity);
+        }
+
+        public async Task<ShowtimeDetailsDTO?> GetShowtimeDetailsAsync(int showtimeId)
+        {
+            var showtime = await _context.Showtimes
+                .Include(s => s.Movie)
+                .Include(s => s.Cinema)
+                .Include(s => s.ShowtimeSeats)
+                    .ThenInclude(ss => ss.Seat)
+                .FirstOrDefaultAsync(s => s.Id == showtimeId);
+
+            if (showtime == null)
+                return null;
+
+            return new ShowtimeDetailsDTO
+            {
+                Id = showtime.Id,
+                StartTime = showtime.StartTime,
+                Movie = new MovieDTO
+                {
+                    Title = showtime.Movie?.Title,
+                    Genre = showtime.Movie?.Genre,
+                    DurationInMinutes = showtime.Movie?.DurationInMinutes ?? 0,
+                    Description = showtime.Movie?.Description,
+                    PosterUrl = showtime.Movie?.PosterUrl
+                },
+                Cinema = new CinemaDTO
+                {
+                    Name = showtime.Cinema?.Name,
+                    Location = showtime.Cinema?.Location
+                },
+                Seats = showtime.ShowtimeSeats.Select(ss => new SeatDTO
+                {
+                    Id = ss.SeatId,
+                    Row = ss.Seat.Row,
+                    Number = ss.Seat.Number,
+                    IsBooked = ss.IsBooked    
+                }).ToList()
+            };
         }
 
 

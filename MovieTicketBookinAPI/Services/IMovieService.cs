@@ -6,7 +6,7 @@ namespace MovieTicketBookinAPI.Services
 {
     public interface IMovieService
     {
-        Task<MovieDTO> AddMovie(MovieDTO movieDto);
+        Task<CreateMovieDTO> AddMovie(CreateMovieDTO movieDto);
         Task<bool> DeleteMovie(int id);
         Task<MovieDTO> FindAsync(int id);
         Task<List<MovieDTO>> SearchMoviesByNameAsync(string name);

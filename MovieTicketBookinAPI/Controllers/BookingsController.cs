@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.SqlServer.Query.Internal;
 using MovieTicketBookinAPI.DTOs;
@@ -21,19 +22,19 @@ namespace MovieTicketBookinAPI.Controllers
         [HttpPost("book")]
         public async Task<IActionResult> BookSeats([FromBody] BookingRequestDTO bookingRequest)
         {
-            var result = await _bookingService.BookSeatsAsync(bookingRequest);
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized(new { message = "User not authenticated or ID not found." });
+            }
+            var result = await _bookingService.BookSeatsAsync(bookingRequest, userId);
 
             if (!result.Success)
             {
                 return BadRequest(new { message = result.Message });
             }
 
-            return Ok(new
-            {
-                message = result.Message,
-                bookingId = result.Booking.Id,
-                bookingTime = result.Booking.BookingTime
-            });
+            return Ok(result);
         }
 
         [HttpGet]
@@ -48,16 +49,31 @@ namespace MovieTicketBookinAPI.Controllers
         }
 
 
-        [HttpGet("id")]
-        public async Task<ActionResult<BookingRequestDTO>> GetBookingById(int id)
+        //[HttpGet("/user/{userId}")]
+        //public async Task<ActionResult<BookingRequestDTO>> GetBookingById()
+        //{
+        //    var booking = await _bookingService.GetBookingByIdAsync(id);
+        //    if (booking == null)
+        //    {
+        //        return NotFound(new { message = "Booking not found" });
+        //    }
+        //    return Ok(booking);
+        //}
+
+        [HttpGet("user-bookings")]
+        [Authorize]
+        public async Task<ActionResult<IEnumerable<BookingHistoryDTO>>> GetUserBookings()
         {
-            var booking = await _bookingService.GetBookingByIdAsync(id);
-            if (booking == null)
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userId))
             {
-                return NotFound(new { message = "Booking not found" });
+                return Unauthorized(new { message = "User not authenticated or ID not found." });
             }
-            return Ok(booking);
+
+            var bookings = await _bookingService.GetUserBookingsAsync(userId);
+            return Ok(bookings);
         }
+
 
         [HttpPut("{id}")]
         public async Task<ActionResult<BookingRequestDTO>> UpdateBooking(int id, [FromBody] BookingRequestDTO request)

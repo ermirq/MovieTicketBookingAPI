@@ -18,7 +18,7 @@ namespace MovieTicketBookinAPI.Services
             _mapper = mapper;
         }
 
-        public async Task<(bool Success, string Message, Booking? Booking)> BookSeatsAsync(BookingRequestDTO bookingRequest)
+        public async Task<BookingResponseDTO> BookSeatsAsync(BookingRequestDTO bookingRequest, string userId)
         {
             using var transaction = await _context.Database.BeginTransactionAsync();
 
@@ -28,27 +28,31 @@ namespace MovieTicketBookinAPI.Services
                 .FirstOrDefaultAsync(s => s.Id == bookingRequest.ShowtimeId);
 
             if (showtime == null)
-                return (false, "Showtime not found.", null);
-
-            var user = await _context.Users.FindAsync(bookingRequest.UserId);
+                return new BookingResponseDTO { Success = false, Message = "Showtime not found." };
+            var user = await _context.Users.FindAsync(userId);
             if (user == null)
-                return (false, "User not found.", null);
-
+                return new BookingResponseDTO { Success = false, Message = "User not found." };
             var requestedShowtimeSeats = showtime.ShowtimeSeats
-                .Where(ss => bookingRequest.SeatNumbers
-                    .Contains($"{ss.Seat.Number}{ss.Seat.Row}"))
+                .Where(ss => bookingRequest.SeatIds
+                    .Contains(ss.SeatId))
                 .ToList();
 
-            if (requestedShowtimeSeats.Count != bookingRequest.SeatNumbers.Count)
-                return (false, "One or more seat numbers are invalid.", null);
-
+            if (requestedShowtimeSeats.Count != bookingRequest.SeatIds.Count)
+                return new BookingResponseDTO { Success = false, Message = "One or more seat numbers are invalid."};
             if (requestedShowtimeSeats.Any(ss => ss.IsBooked))
-                return (false, "One or more seats are already booked.", null);
+            {
+                var alreadyBookedSeatNumbers = requestedShowtimeSeats
+                    .Where(ss => ss.IsBooked)
+                    .Select(ss => $"{ss.Seat.Row}{ss.Seat.Number}")
+                    .ToList();
+                return new BookingResponseDTO { Success = false, Message = "One or more seats are already booked."};
+            }
 
             var booking = new Booking
             {
-                UserId = bookingRequest.UserId,
+                UserId = userId,
                 ShowtimeId = bookingRequest.ShowtimeId,
+                SeatIds = bookingRequest.SeatIds,
                 BookingTime = DateTime.UtcNow,
                 Status = "Confirmed"
             };
@@ -74,7 +78,11 @@ namespace MovieTicketBookinAPI.Services
             await _context.SaveChangesAsync();
             await transaction.CommitAsync();
 
-            return (true, "Booking successful.", booking);
+            return new BookingResponseDTO
+            {
+                Success = true,
+                Message = "Booking successful."
+            };
         }
 
         public async Task<IEnumerable<BookingRequestDTO>> GetAllBookingsAsync()
@@ -107,14 +115,13 @@ namespace MovieTicketBookinAPI.Services
             if (booking == null)
                 return null;
 
-            booking.UserId = request.UserId;
             booking.ShowtimeId = request.ShowtimeId;
 
             _context.BookingSeats.RemoveRange(booking.BookingSeats);
 
             var oldShowtimeSeats = await _context.ShowtimeSeats
-       .Where(ss => ss.BookingId == booking.Id)
-       .ToListAsync();
+               .Where(ss => ss.BookingId == booking.Id)
+               .ToListAsync();
 
             foreach (var ss in oldShowtimeSeats)
             {
@@ -175,6 +182,33 @@ namespace MovieTicketBookinAPI.Services
             _context.Bookings.Remove(booking);
             await _context.SaveChangesAsync();
             return true;
+        }
+
+        public async Task<IEnumerable<BookingHistoryDTO>> GetUserBookingsAsync(string userId)
+        {
+            var bookings = await _context.Bookings
+                .Where(b => b.UserId == userId)
+                .Include(b => b.ShowTime) 
+                    .ThenInclude(st => st.Movie) 
+                .Include(b => b.ShowTime) 
+                    .ThenInclude(st => st.Cinema) 
+                .Include(b => b.BookingSeats)
+                .OrderByDescending(b => b.BookingTime)
+                .ToListAsync();
+
+            
+            var bookingHistory = bookings.Select(b => new BookingHistoryDTO
+            {
+                Id = b.Id,
+                MovieTitle = b.ShowTime?.Movie?.Title ?? "N/A", 
+                Showtime = b.ShowTime?.StartTime ?? DateTime.MinValue, 
+                CinemaName = b.ShowTime?.Cinema?.Name ?? "N/A", 
+                BookingTime = b.BookingTime,
+                Status = b.Status,
+                Seats = b.BookingSeats.Select(bs => bs.SeatNumber ?? "N/A").ToList()
+            }).ToList();
+
+            return bookingHistory;
         }
     }
 }

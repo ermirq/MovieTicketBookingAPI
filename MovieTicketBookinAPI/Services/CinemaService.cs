@@ -18,8 +18,11 @@ namespace MovieTicketBookinAPI.Services
 
         public async Task<IEnumerable<CinemaDTO>> GetAllCinemasAsync()
         {
-            var cinema = await _context.Cinemas.ToListAsync();
-            return _mapper.Map<IEnumerable<CinemaDTO>>(cinema);
+            var cinemas = await _context.Cinemas
+               .Include(c => c.Showtimes)
+                   .ThenInclude(s => s.Movie)
+               .ToListAsync();
+            return _mapper.Map<IEnumerable<CinemaDTO>>(cinemas);
         }
 
         public async Task<CinemaDTO> FindAsync(int id)
@@ -32,15 +35,21 @@ namespace MovieTicketBookinAPI.Services
             return _mapper.Map<CinemaDTO>(cinema);
         }
 
-        public async Task<CinemaDTO> AddAsync(CinemaDTO cinemaDto)
+        public async Task<CreateCinemaDTO> AddAsync(CreateCinemaDTO cinemaDto)
         {
-            var cinemaEntity = _mapper.Map<Cinema>(cinemaDto);
+            var cinema = _mapper.Map<Cinema>(cinemaDto);
 
-            await _context.Cinemas.AddAsync(cinemaEntity);
+            _context.Cinemas.Add(cinema);
             await _context.SaveChangesAsync();
 
-            return _mapper.Map<CinemaDTO>(cinemaEntity);
+            if (cinemaDto.NumRows.HasValue && cinemaDto.SeatsPerRow.HasValue)
+            {
+                await AddSeatsAsync(cinema.Id, cinemaDto.NumRows.Value, cinemaDto.SeatsPerRow.Value);
+            }
+
+            return _mapper.Map<CreateCinemaDTO>(cinema);
         }
+
 
         public async Task<CinemaDTO> UpdateAsync(int id, CinemaDTO cinemaDto)
         {
@@ -63,10 +72,17 @@ namespace MovieTicketBookinAPI.Services
 
         public async Task<bool> DeleteAsync(int id)
         {
-            var deleteCinema = await _context.Cinemas.FirstOrDefaultAsync(t => t.Id == id);
+            var deleteCinema = await _context.Cinemas
+                .Include(c => c.Showtimes)
+                .FirstOrDefaultAsync(t => t.Id == id);
             if (deleteCinema == null)
             {
                 throw new Exception("Cinema not found.");
+            }
+
+            if (deleteCinema.Showtimes != null && deleteCinema.Showtimes.Any())
+            {
+                _context.Showtimes.RemoveRange(deleteCinema.Showtimes);
             }
 
             _context.Cinemas.Remove(deleteCinema);
@@ -114,6 +130,16 @@ namespace MovieTicketBookinAPI.Services
             await _context.SaveChangesAsync();
 
             return newSeats.Count;
+        }
+
+        public async Task<List<CinemaDTO>> GetCinemasWithShowtimesAsync()
+        {
+            var cinemas = await _context.Cinemas
+                .Include(c => c.Showtimes)
+                    .ThenInclude(s => s.Movie)
+                .ToListAsync();
+
+            return _mapper.Map<List<CinemaDTO>>(cinemas);
         }
     }
 }
