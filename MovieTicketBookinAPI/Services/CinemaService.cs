@@ -51,7 +51,7 @@ namespace MovieTicketBookinAPI.Services
         }
 
 
-        public async Task<CinemaDTO> UpdateAsync(int id, CinemaDTO cinemaDto)
+        public async Task<CinemaDTO?> UpdateAsync(int id, CinemaDTO cinemaDto)
         {
             var existingCinema = _context.Cinemas.FirstOrDefault(t => t.Id == id);
 

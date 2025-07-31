@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using MovieTicketBookinAPI.DTOs;
+using MovieTicketBookinAPI.DTOs.UserDTOs;
 using MovieTicketBookinAPI.Models;
-using MovieTicketBookinAPI.Models.UserRoles;
 using System.Threading.Tasks;
 
 namespace MovieTicketBookinAPI.Services
@@ -10,7 +10,7 @@ namespace MovieTicketBookinAPI.Services
     {
         Task<IdentityResult> AddRoleAsync(string role);
         Task<IdentityResult> AssignRoleAsync(UserRole model);
-        Task<AuthResponseDTO?> LoginAsync(Login model);
+        Task<AuthResponseDTO?> LoginAsync(Login model, HttpResponse response);
         Task<IdentityResult> RegisterAsync(Register model);
     }
 }

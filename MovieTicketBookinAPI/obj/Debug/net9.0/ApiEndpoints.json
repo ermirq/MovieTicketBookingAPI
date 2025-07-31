@@ -25,7 +25,7 @@
     "Parameters": [
       {
         "Name": "model",
-        "Type": "MovieTicketBookinAPI.Models.UserRoles.UserRole",
+        "Type": "MovieTicketBookinAPI.DTOs.UserDTOs.UserRole",
         "IsRequired": true
       }
     ],
@@ -41,7 +41,7 @@
     "Parameters": [
       {
         "Name": "model",
-        "Type": "MovieTicketBookinAPI.Models.UserRoles.Login",
+        "Type": "MovieTicketBookinAPI.DTOs.UserDTOs.Login",
         "IsRequired": true
       }
     ],
@@ -57,7 +57,7 @@
     "Parameters": [
       {
         "Name": "model",
-        "Type": "MovieTicketBookinAPI.Models.UserRoles.Register",
+        "Type": "MovieTicketBookinAPI.DTOs.UserDTOs.Register",
         "IsRequired": true
       }
     ],
@@ -99,7 +99,7 @@
     "Parameters": [
       {
         "Name": "model",
-        "Type": "MovieTicketBookinAPI.Models.UserRoles.UserRole",
+        "Type": "MovieTicketBookinAPI.DTOs.UserDTOs.UserRole",
         "IsRequired": true
       }
     ],
@@ -115,7 +115,7 @@
     "Parameters": [
       {
         "Name": "model",
-        "Type": "MovieTicketBookinAPI.Models.UserRoles.Login",
+        "Type": "MovieTicketBookinAPI.DTOs.UserDTOs.Login",
         "IsRequired": true
       }
     ],
@@ -131,7 +131,7 @@
     "Parameters": [
       {
         "Name": "model",
-        "Type": "MovieTicketBookinAPI.Models.UserRoles.Register",
+        "Type": "MovieTicketBookinAPI.DTOs.UserDTOs.Register",
         "IsRequired": true
       }
     ],

@@ -1,8 +1,9 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Azure;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using MovieTicketBookinAPI.DTOs;
+using MovieTicketBookinAPI.DTOs.UserDTOs;
 using MovieTicketBookinAPI.Models;
-using MovieTicketBookinAPI.Models.UserRoles;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -45,7 +46,7 @@ namespace MovieTicketBookinAPI.Services
             return result;
         }
 
-        public async Task<AuthResponseDTO?> LoginAsync(Login model)
+        public async Task<AuthResponseDTO?> LoginAsync(Login model, HttpResponse response)
         {
             var user = await _userManager.FindByNameAsync(model.Identifier);
 
@@ -77,17 +78,18 @@ namespace MovieTicketBookinAPI.Services
 
                 var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
 
-                var extractedRoles = new JwtSecurityTokenHandler()
-                    .ReadJwtToken(tokenString)
-                    .Claims
-                    .Where(c => c.Type == ClaimTypes.Role)
-                    .Select(c => c.Value)
-                    .ToList();
+                response.Cookies.Append("jwt", tokenString, new CookieOptions
+                {
+                    HttpOnly = true,
+                    Secure = true, 
+                    SameSite = SameSiteMode.Strict,
+                    Expires = token.ValidTo
+                });
 
                 return new AuthResponseDTO
                 {
                     Token = tokenString,
-                    Roles = extractedRoles
+                    Roles = userRoles.ToList()
                 };
             }
 
@@ -106,60 +108,11 @@ namespace MovieTicketBookinAPI.Services
                 FirstName = model.FirstName,
                 LastName = model.LastName,
                 DateCreated = DateTime.UtcNow,
-                Password = model.Password
             };
 
             var result = await _userManager.CreateAsync(user, model.Password);
 
             return result;
         }
-
-        //public Task RegisterAsync(Register model)
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        //private string CreateToken(ApplicationUser user)
-        //{
-        //    var claims = new List<Claim>
-        //    {
-        //        new Claim(ClaimTypes.Name, user.UserName),
-        //        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-        //        //new Claim(ClaimTypes.GivenName, user.FirstName),
-        //        //new Claim(ClaimTypes.Surname, user.LastName),
-        //        //new Claim(ClaimTypes.Email, user.EmailAddress),
-        //        //new Claim(ClaimTypes.MobilePhone, user.PhoneNumber)
-        //    };
-
-        //    var key = new SymmetricSecurityKey(
-        //        Encoding.UTF8.GetBytes(configuration.GetValue<string>("AppSettings:Token")!));
-
-        //    var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512);
-
-        //    var tokenDescriptor = new JwtSecurityToken(
-        //        issuer: configuration.GetValue<string>("AppSettings:Issuer"),
-        //        audience: configuration.GetValue<string>("AppSettings:Audience"),
-        //        claims: claims,
-        //        expires: DateTime.Now.AddDays(1),
-        //        signingCredentials: creds
-        //        );
-
-        //    return new JwtSecurityTokenHandler().WriteToken(tokenDescriptor);
-        //}
     }
-
-    //public async Task<string?> LoginAsync(ApplicationUserDTO request)
-    //{
-    //    var user = await _userManager.FindByNameAsync(u => u.UserName == request.UserName);
-    //    if(user is null)
-    //    {
-    //        return null;
-    //    }
-    //    if (new PasswordHasher<ApplicationUser>().VerifyHashedPassword(user, user.Password, request.Password)
-    //       == PasswordVerificationResult.Failed)
-    //    {
-    //        return null;
-    //    }
-    //    return CreateToken(user);
-    //}
 }

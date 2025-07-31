@@ -57,12 +57,16 @@ namespace MovieTicketBookinAPI.Services
 
         public async Task<List<MovieDTO>> SearchMoviesByNameAsync(string name)
         {
+            if (name == null)
+            {
+                return null;
+            }
             var movies = await context.Movies
                 .Where(m => m.Title.Contains(name))
                 .ToListAsync();
 
             if (movies == null)
-                return null;
+                throw new Exception("NotFound");
 
             return mapper.Map<List<MovieDTO>>(movies);
         }

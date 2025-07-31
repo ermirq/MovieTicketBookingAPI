@@ -1,11 +1,13 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.SqlServer.Query.Internal;
 using MovieTicketBookinAPI.DTOs;
 using MovieTicketBookinAPI.Services;
 using System.Formats.Asn1;
 using System.Security.Claims;
+using System.Text.Json;
 
 namespace MovieTicketBookinAPI.Controllers
 {
@@ -14,9 +16,11 @@ namespace MovieTicketBookinAPI.Controllers
     public class BookingsController : ControllerBase
     {
         private readonly IBookingService _bookingService;
-        public BookingsController(IBookingService bookingService)
+        private readonly SseService _sseService;
+        public BookingsController(IBookingService bookingService, SseService sseService)
         {
             _bookingService = bookingService;
+            _sseService = sseService;
         }
 
         [HttpPost("book")]
@@ -48,17 +52,6 @@ namespace MovieTicketBookinAPI.Controllers
             return Ok(bookings);
         }
 
-
-        //[HttpGet("/user/{userId}")]
-        //public async Task<ActionResult<BookingRequestDTO>> GetBookingById()
-        //{
-        //    var booking = await _bookingService.GetBookingByIdAsync(id);
-        //    if (booking == null)
-        //    {
-        //        return NotFound(new { message = "Booking not found" });
-        //    }
-        //    return Ok(booking);
-        //}
 
         [HttpGet("user-bookings")]
         [Authorize]

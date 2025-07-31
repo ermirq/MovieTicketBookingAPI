@@ -259,6 +259,7 @@ C:\Users\hp\source\repos\MovieTicketBookinAPI\MovieTicketBookinAPI\bin\Debug\net
 C:\Users\hp\source\repos\MovieTicketBookinAPI\MovieTicketBookinAPI\bin\Debug\net9.0\runtimes\win-x86\native\Microsoft.Data.SqlClient.SNI.dll
 C:\Users\hp\source\repos\MovieTicketBookinAPI\MovieTicketBookinAPI\bin\Debug\net9.0\runtimes\win\lib\net6.0\System.Runtime.Caching.dll
 C:\Users\hp\source\repos\MovieTicketBookinAPI\MovieTicketBookinAPI\obj\Debug\net9.0\MovieTicketBookinAPI.csproj.AssemblyReference.cache
+C:\Users\hp\source\repos\MovieTicketBookinAPI\MovieTicketBookinAPI\obj\Debug\net9.0\rpswa.dswa.cache.json
 C:\Users\hp\source\repos\MovieTicketBookinAPI\MovieTicketBookinAPI\obj\Debug\net9.0\MovieTicketBookinAPI.GeneratedMSBuildEditorConfig.editorconfig
 C:\Users\hp\source\repos\MovieTicketBookinAPI\MovieTicketBookinAPI\obj\Debug\net9.0\MovieTicketBookinAPI.AssemblyInfoInputs.cache
 C:\Users\hp\source\repos\MovieTicketBookinAPI\MovieTicketBookinAPI\obj\Debug\net9.0\MovieTicketBookinAPI.AssemblyInfo.cs
@@ -266,6 +267,9 @@ C:\Users\hp\source\repos\MovieTicketBookinAPI\MovieTicketBookinAPI\obj\Debug\net
 C:\Users\hp\source\repos\MovieTicketBookinAPI\MovieTicketBookinAPI\obj\Debug\net9.0\MovieTicketBookinAPI.MvcApplicationPartsAssemblyInfo.cs
 C:\Users\hp\source\repos\MovieTicketBookinAPI\MovieTicketBookinAPI\obj\Debug\net9.0\MovieTicketBookinAPI.MvcApplicationPartsAssemblyInfo.cache
 C:\Users\hp\source\repos\MovieTicketBookinAPI\MovieTicketBookinAPI\obj\Debug\net9.0\MovieTicketBookinAPI.sourcelink.json
+C:\Users\hp\source\repos\MovieTicketBookinAPI\MovieTicketBookinAPI\obj\Debug\net9.0\rjimswa.dswa.cache.json
+C:\Users\hp\source\repos\MovieTicketBookinAPI\MovieTicketBookinAPI\obj\Debug\net9.0\rjsmrazor.dswa.cache.json
+C:\Users\hp\source\repos\MovieTicketBookinAPI\MovieTicketBookinAPI\obj\Debug\net9.0\rjsmcshtml.dswa.cache.json
 C:\Users\hp\source\repos\MovieTicketBookinAPI\MovieTicketBookinAPI\obj\Debug\net9.0\scopedcss\bundle\MovieTicketBookinAPI.styles.css
 C:\Users\hp\source\repos\MovieTicketBookinAPI\MovieTicketBookinAPI\obj\Debug\net9.0\staticwebassets.build.json
 C:\Users\hp\source\repos\MovieTicketBookinAPI\MovieTicketBookinAPI\obj\Debug\net9.0\staticwebassets.build.json.cache
@@ -278,7 +282,3 @@ C:\Users\hp\source\repos\MovieTicketBookinAPI\MovieTicketBookinAPI\obj\Debug\net
 C:\Users\hp\source\repos\MovieTicketBookinAPI\MovieTicketBookinAPI\obj\Debug\net9.0\MovieTicketBookinAPI.pdb
 C:\Users\hp\source\repos\MovieTicketBookinAPI\MovieTicketBookinAPI\obj\Debug\net9.0\MovieTicketBookinAPI.genruntimeconfig.cache
 C:\Users\hp\source\repos\MovieTicketBookinAPI\MovieTicketBookinAPI\obj\Debug\net9.0\ref\MovieTicketBookinAPI.dll
-C:\Users\hp\source\repos\MovieTicketBookinAPI\MovieTicketBookinAPI\obj\Debug\net9.0\rpswa.dswa.cache.json
-C:\Users\hp\source\repos\MovieTicketBookinAPI\MovieTicketBookinAPI\obj\Debug\net9.0\rjimswa.dswa.cache.json
-C:\Users\hp\source\repos\MovieTicketBookinAPI\MovieTicketBookinAPI\obj\Debug\net9.0\rjsmrazor.dswa.cache.json
-C:\Users\hp\source\repos\MovieTicketBookinAPI\MovieTicketBookinAPI\obj\Debug\net9.0\rjsmcshtml.dswa.cache.json

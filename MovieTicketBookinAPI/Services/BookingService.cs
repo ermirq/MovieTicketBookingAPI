@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using MovieTicketBookinAPI.Data;
 using MovieTicketBookinAPI.DTOs;
 using MovieTicketBookinAPI.Models;
+using System.Text.Json;
 
 namespace MovieTicketBookinAPI.Services
 {
@@ -11,11 +12,13 @@ namespace MovieTicketBookinAPI.Services
     {
         private readonly AppDbContext _context;
         private readonly IMapper _mapper;
+        private readonly SseService _sseService;
 
-        public BookingService(AppDbContext context, IMapper mapper)
+        public BookingService(AppDbContext context, IMapper mapper, SseService sseService)
         {
             _context = context;
             _mapper = mapper;
+            _sseService = sseService;
         }
 
         public async Task<BookingResponseDTO> BookSeatsAsync(BookingRequestDTO bookingRequest, string userId)
@@ -209,6 +212,49 @@ namespace MovieTicketBookinAPI.Services
             }).ToList();
 
             return bookingHistory;
+        }
+
+        public async Task StreamBookings(HttpResponse response, CancellationToken cancellationToken)
+        {
+            response.Headers.Add("Cache-Control", "no-cache");
+            response.Headers.Add("Content-Type", "text/event-stream");
+            response.Headers.Add("Access-Control-Allow-Origin", "*");
+
+            await response.Body.FlushAsync(cancellationToken);
+
+            int lastBookingId = 0;
+
+            while (!cancellationToken.IsCancellationRequested)
+            {
+                var newBookings = await _context.Bookings
+                    .Include(b => b.ShowtimeId)
+                    .Include(b => b.User)
+                    .Where(b => b.Id > lastBookingId)
+                    .OrderBy(b => b.Id)
+                    .ToListAsync(cancellationToken);
+
+                foreach (var booking in newBookings)
+                {
+                    var bookingEvent = new
+                    {
+                        user = booking.UserId,
+                        seats = booking.SeatIds,
+                        movie = booking.ShowTime.Movie.Title,
+                    };
+
+                    var json = JsonSerializer.Serialize(bookingEvent, new JsonSerializerOptions
+                    {
+                        ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles,
+                        WriteIndented = false
+                    });
+                    await response.WriteAsync($"data: {json}\n\n", cancellationToken);
+                    await response.Body.FlushAsync(cancellationToken);
+
+                    lastBookingId = booking.Id;
+                }
+
+                await Task.Delay(5000, cancellationToken);
+            }
         }
     }
 }
