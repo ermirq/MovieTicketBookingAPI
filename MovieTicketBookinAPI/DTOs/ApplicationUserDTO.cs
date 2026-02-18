@@ -12,4 +12,14 @@ namespace MovieTicketBookinAPI.DTOs
         public DateTime DateCreated { get; set; }
         public string PhoneNumber { get; set; } = string.Empty;
     }
+
+    public class UserBookingDTO
+    {
+        public Guid Id { get; set; }
+        public string MovieTitle { get; set; } = string.Empty;
+        public string CinemaName { get; set; } = string.Empty;
+        public DateTime Showtime { get; set; }
+        public DateTime BookingTime { get; set; }
+        public List<string> Seats { get; set; } = new();
+    }
 }

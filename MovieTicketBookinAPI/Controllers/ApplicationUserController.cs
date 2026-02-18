@@ -5,8 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using MovieTicketBookinAPI.DTOs;
+using MovieTicketBookinAPI.DTOs.UserDTOs;
 using MovieTicketBookinAPI.Models;
-using MovieTicketBookinAPI.Models.UserRoles;
 using MovieTicketBookinAPI.Services;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -28,6 +28,9 @@ namespace MovieTicketBookinAPI.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] Register model)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             var result = await _userService.RegisterAsync(model);
 
             if (result.Succeeded)
@@ -43,7 +46,8 @@ namespace MovieTicketBookinAPI.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] Login model)
         {
-            var result = await _userService.LoginAsync(model);
+            var token = HttpContext.Request.Cookies["jwt"];
+            var result = await _userService.LoginAsync(model, Response);
 
             if (result == null)
             {
@@ -53,7 +57,7 @@ namespace MovieTicketBookinAPI.Controllers
             return Ok(result);
         }
 
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         [HttpPost("add-role")]
         public async Task<IActionResult> AddRole([FromBody] string role)
         {

@@ -6,9 +6,10 @@
         public Booking Booking { get; set; } = null!;
 
         public int ShowtimeId { get; set; }
-        public ShowtimeSeat ShowtimeSeat { get; set; } = null!;
 
-        public int SeatId { get; set; } 
+        public int SeatId { get; set; }
+
+        public ShowtimeSeat ShowtimeSeat { get; set; } = null!;
         public string? SeatNumber { get; set; }
     }
 }

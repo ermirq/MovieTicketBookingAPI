@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using MovieTicketBookinAPI.DTOs.UserDTOs;
 using MovieTicketBookinAPI.Models;
-using MovieTicketBookinAPI.Models.UserRoles;
 using System.Configuration;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;

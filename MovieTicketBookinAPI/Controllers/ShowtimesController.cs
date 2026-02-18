@@ -45,6 +45,17 @@ namespace MovieTicketBookinAPI.Controllers
             return Ok(showtimes);
         }
 
+        [HttpGet("{id}/details")]
+        public async Task<IActionResult> GetShowtimeDetails(int id)
+        {
+            var showtimeDetails = await _showtimeService.GetShowtimeDetailsAsync(id);
+
+            if (showtimeDetails == null)
+                return NotFound(new { message = "Showtime not found." });
+
+            return Ok(showtimeDetails);
+        }
+
         [HttpPost]
         public async Task<ActionResult<ShowtimeDTO>> AddShowtime([FromBody] ShowtimeDTO showtimeDTO)
         {

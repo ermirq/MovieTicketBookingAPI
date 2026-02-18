@@ -8,7 +8,10 @@
         public ApplicationUser? User { get; set; }
 
         public int ShowtimeId { get; set; }
-        public Showtime? ShowTime { get; set; } 
+        public Showtime? ShowTime { get; set; }
+
+        public List<int> SeatIds { get; set; } = new();
+        public Seat? Seat { get; set; }
 
         public ICollection<BookingSeat> BookingSeats { get; set; } = new List<BookingSeat>();
 

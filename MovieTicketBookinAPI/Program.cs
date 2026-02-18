@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using MovieTicketBookinAPI.Data;
 using MovieTicketBookinAPI.Mappings;
@@ -32,6 +33,7 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddControllers();
 
+builder.Services.AddSingleton<SseService>();
 builder.Services.AddScoped<IBookingService, BookingService>();
 builder.Services.AddScoped<IMovieService, MovieService>();
 builder.Services.AddScoped<ICinemaService, CinemaService>();
@@ -39,17 +41,33 @@ builder.Services.AddScoped<IShowtimeService, ShowtimeService>();
 builder.Services.AddScoped<ISeatService, SeatService>();
 builder.Services.AddScoped<IApplicationUserService, ApplicationUserService>();
 
+
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+{
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+
+
+    //options.LogTo(Console.WriteLine, LogLevel.Information).EnableSensitiveDataLogging();
+});
 
 builder.Services.AddIdentity<IdentityUser, IdentityRole>() 
     .AddEntityFrameworkStores<AppDbContext>() 
     .AddDefaultTokenProviders();
+
+builder.Services.Configure<IdentityOptions>(options =>
+{
+    options.Password.RequireDigit = false;
+    options.Password.RequiredLength = 8;
+    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequireUppercase = true;
+    options.Password.RequireLowercase = true;
+});
+
 
 builder.Services.AddAuthentication(options=>
 {
@@ -71,7 +89,21 @@ builder.Services.AddAuthentication(options=>
                 Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!)),
             RoleClaimType = ClaimTypes.Role
         };
+
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
+            {
+                var token = context.Request.Cookies["jwt"];
+                if (!string.IsNullOrEmpty(token))
+                {
+                    context.Token = token;
+                }
+                return Task.CompletedTask;
+            }
+        };
     });
+
 
 builder.Services.AddAuthorization(options =>
 {
@@ -93,6 +125,22 @@ if (app.Environment.IsDevelopment())
     app.MapScalarApiReference();
     app.MapOpenApi();
 }
+
+app.Use(async (context, next) =>
+{
+    context.Response.Headers.Append("Content-Security-Policy",
+        "default-src 'self'; " +
+        "script-src 'self'; " +
+        "style-src 'self' 'unsafe-inline'; " +
+        "img-src 'self' data:; " +
+        "font-src 'self'; " +
+        "connect-src 'self' https://localhost:*; " +
+        "object-src 'none'; " +
+        "base-uri 'self'; " +
+        "frame-ancestors 'none';");
+    await next();
+});
+
 
 app.UseHttpsRedirection();
 

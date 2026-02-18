@@ -18,14 +18,14 @@ namespace MovieTicketBookinAPI.Services
             this.context = context;
             this.mapper = mapper;
         }
-        public async Task<MovieDTO> AddMovie(MovieDTO movieDto)
+        public async Task<CreateMovieDTO> AddMovie(CreateMovieDTO movieDto)
         {
             var movieEtity = mapper.Map<Movie>(movieDto);
 
             await context.Movies.AddAsync(movieEtity);
             await context.SaveChangesAsync();
 
-            var createdMovieDto = mapper.Map<MovieDTO>(movieEtity);
+            var createdMovieDto = mapper.Map<CreateMovieDTO>(movieEtity);
             return createdMovieDto;
 
         }
@@ -57,12 +57,16 @@ namespace MovieTicketBookinAPI.Services
 
         public async Task<List<MovieDTO>> SearchMoviesByNameAsync(string name)
         {
+            if (name == null)
+            {
+                return null;
+            }
             var movies = await context.Movies
                 .Where(m => m.Title.Contains(name))
                 .ToListAsync();
 
             if (movies == null)
-                return null;
+                throw new Exception("NotFound");
 
             return mapper.Map<List<MovieDTO>>(movies);
         }

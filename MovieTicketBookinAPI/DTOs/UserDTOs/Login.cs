@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace MovieTicketBookinAPI.Models.UserRoles
+namespace MovieTicketBookinAPI.DTOs.UserDTOs
 {
     public class Login
     {
